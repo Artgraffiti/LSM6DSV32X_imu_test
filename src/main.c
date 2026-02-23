@@ -19,21 +19,6 @@ int main(void)
         return 0;
     }
 
-    // --- Настройка параметров ---
-    struct sensor_value odr_attr;
-
-    // Установка ODR 120 Гц (поддерживаемая частота для LSM6DSV)
-    odr_attr.val1 = 120;
-    odr_attr.val2 = 0;
-
-    if (sensor_attr_set(imu_dev, SENSOR_CHAN_ACCEL_XYZ, SENSOR_ATTR_SAMPLING_FREQUENCY, &odr_attr) < 0) {
-        printf("Failed to set Accel ODR\n");
-    }
-
-    if (sensor_attr_set(imu_dev, SENSOR_CHAN_GYRO_XYZ, SENSOR_ATTR_SAMPLING_FREQUENCY, &odr_attr) < 0) {
-        printf("Failed to set Gyro ODR\n");
-    }
-
     printf("Sensor configured. Starting polling loop...\n");
 
     struct sensor_value acc[3];
