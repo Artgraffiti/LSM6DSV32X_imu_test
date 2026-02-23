@@ -32,11 +32,13 @@
 		reg = <0>;
 		status = "okay";
 		spi-max-frequency = <10000000>;
+		int1-gpios = <&gpio1 11 GPIO_ACTIVE_HIGH>;
+		drdy-pin = <1>;
 
 		accel-range = <LSM6DSV16X_DT_FS_8G>;
-		accel-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
 		gyro-range = <LSM6DSV16X_DT_FS_4000DPS>;
-		gyro-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
+		accel-odr = <LSM6DSV16X_DT_ODR_AT_1920Hz>;
+		gyro-odr = <LSM6DSV16X_DT_ODR_AT_1920Hz>;
 	};
 };
 
