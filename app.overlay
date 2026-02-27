@@ -25,7 +25,10 @@
 	pinctrl-1 = <&spim21_sleep>;
 	pinctrl-names = "default", "sleep";
 
-	cs-gpios = <&gpio2 7 GPIO_ACTIVE_LOW>;
+	cs-gpios = <&gpio2 7 GPIO_ACTIVE_LOW>,
+		   <&gpio2 5 GPIO_ACTIVE_LOW>,
+		   <&gpio2 4 GPIO_ACTIVE_LOW>,
+		   <&gpio2 3 GPIO_ACTIVE_LOW>;
 
 	lsm6dsv32x_0: lsm6dsv32x@0 {
 		compatible = "st,lsm6dsv32x";
@@ -37,13 +40,52 @@
 
 		accel-range = <LSM6DSV16X_DT_FS_8G>;
 		gyro-range = <LSM6DSV16X_DT_FS_4000DPS>;
-		accel-odr = <LSM6DSV16X_DT_ODR_AT_1920Hz>;
-		gyro-odr = <LSM6DSV16X_DT_ODR_AT_1920Hz>;
+		accel-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
+		gyro-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
+	};
+
+	lsm6dsv32x_1: lsm6dsv32x@1 {
+		compatible = "st,lsm6dsv32x";
+		reg = <1>;
+		status = "okay";
+		spi-max-frequency = <10000000>;
+
+		accel-range = <LSM6DSV16X_DT_FS_8G>;
+		gyro-range = <LSM6DSV16X_DT_FS_4000DPS>;
+		accel-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
+		gyro-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
+	};
+
+	lsm6dsv32x_2: lsm6dsv32x@2 {
+		compatible = "st,lsm6dsv32x";
+		reg = <2>;
+		status = "okay";
+		spi-max-frequency = <10000000>;
+
+		accel-range = <LSM6DSV16X_DT_FS_8G>;
+		gyro-range = <LSM6DSV16X_DT_FS_4000DPS>;
+		accel-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
+		gyro-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
+	};
+
+	lsm6dsv32x_3: lsm6dsv32x@3 {
+		compatible = "st,lsm6dsv32x";
+		reg = <3>;
+		status = "okay";
+		spi-max-frequency = <10000000>;
+
+		accel-range = <LSM6DSV16X_DT_FS_8G>;
+		gyro-range = <LSM6DSV16X_DT_FS_4000DPS>;
+		accel-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
+		gyro-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
 	};
 };
 
 / {
 	aliases {
 		imu0 = &lsm6dsv32x_0;
+		imu1 = &lsm6dsv32x_1;
+		imu2 = &lsm6dsv32x_2;
+		imu3 = &lsm6dsv32x_3;
 	};
 };
