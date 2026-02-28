@@ -35,13 +35,13 @@
 		reg = <0>;
 		status = "okay";
 		spi-max-frequency = <10000000>;
-		int1-gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>;
+		int1-gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
 		drdy-pin = <1>;
 
 		accel-range = <LSM6DSV16X_DT_FS_8G>;
 		gyro-range = <LSM6DSV16X_DT_FS_4000DPS>;
-		accel-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
-		gyro-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
+		accel-odr = <LSM6DSV16X_DT_ODR_AT_1920Hz>;
+		gyro-odr = <LSM6DSV16X_DT_ODR_AT_1920Hz>;
 	};
 
 	lsm6dsv32x_1: lsm6dsv32x@1 {
@@ -52,8 +52,8 @@
 
 		accel-range = <LSM6DSV16X_DT_FS_8G>;
 		gyro-range = <LSM6DSV16X_DT_FS_4000DPS>;
-		accel-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
-		gyro-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
+		accel-odr = <LSM6DSV16X_DT_ODR_AT_1920Hz>;
+		gyro-odr = <LSM6DSV16X_DT_ODR_AT_1920Hz>;
 	};
 
 	lsm6dsv32x_2: lsm6dsv32x@2 {
@@ -64,8 +64,8 @@
 
 		accel-range = <LSM6DSV16X_DT_FS_8G>;
 		gyro-range = <LSM6DSV16X_DT_FS_4000DPS>;
-		accel-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
-		gyro-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
+		accel-odr = <LSM6DSV16X_DT_ODR_AT_1920Hz>;
+		gyro-odr = <LSM6DSV16X_DT_ODR_AT_1920Hz>;
 	};
 
 	lsm6dsv32x_3: lsm6dsv32x@3 {
@@ -76,8 +76,8 @@
 
 		accel-range = <LSM6DSV16X_DT_FS_8G>;
 		gyro-range = <LSM6DSV16X_DT_FS_4000DPS>;
-		accel-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
-		gyro-odr = <LSM6DSV16X_DT_ODR_AT_60Hz>;
+		accel-odr = <LSM6DSV16X_DT_ODR_AT_1920Hz>;
+		gyro-odr = <LSM6DSV16X_DT_ODR_AT_1920Hz>;
 	};
 };
 
