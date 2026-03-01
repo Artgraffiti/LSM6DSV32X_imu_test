@@ -86,7 +86,7 @@ void monitor_thread_entry(void *p1, void *p2, void *p3)
     int64_t last_time = k_uptime_get();
 
     while (1) {
-        k_sleep(K_SECONDS(10));
+        k_sleep(K_SECONDS(2));
 
         int64_t now = k_uptime_get();
         int64_t delta_ms = now - last_time;
