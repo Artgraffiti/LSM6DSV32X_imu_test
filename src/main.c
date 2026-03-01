@@ -7,23 +7,14 @@
 #define IMU_COUNT 4
 #define MASTER_IMU_INDEX 0
 
-#define WORKER_STACK_SIZE  2048
 #define MONITOR_STACK_SIZE 2048
 
-#define WORKER_PRIORITY    2
 #define MONITOR_PRIORITY   5
 
 struct imu_context {
     const struct device *dev;
-    atomic_t sample_count;
     struct sensor_value acc[3];
     struct sensor_value gyr[3];
-};
-
-// Структура пакета данных для передачи через очередь
-struct imu_sensor_data {
-    struct sensor_value acc[IMU_COUNT][3];
-    struct sensor_value gyr[IMU_COUNT][3];
 };
 
 static struct imu_context imu_ctxs[IMU_COUNT];
@@ -37,15 +28,11 @@ static const struct device *const imu_devs[IMU_COUNT] = {
 
 static volatile uint32_t interrupt_count = 0;
 
-// Создаем очередь на 10 пакетов данных
-K_MSGQ_DEFINE(imu_msgq, sizeof(struct imu_sensor_data), 10, 4);
-
 // 1. Обработчик прерывания: ТОЛЬКО читает данные (чтобы сбросить пин) и кладет их в очередь
 static void trigger_handler(const struct device *dev,
                           const struct sensor_trigger *trigger)
 {
     interrupt_count++;
-    struct imu_sensor_data data;
 
     for (int i = 0; i < IMU_COUNT; i++) {
         struct imu_context *ctx = &imu_ctxs[i];
@@ -53,41 +40,11 @@ static void trigger_handler(const struct device *dev,
 
         // Чтение обязательно должно быть здесь, чтобы железо сняло флаг DRDY
         if (sensor_sample_fetch(ctx->dev) == 0) {
-            sensor_channel_get(ctx->dev, SENSOR_CHAN_ACCEL_XYZ, data.acc[i]);
-            sensor_channel_get(ctx->dev, SENSOR_CHAN_GYRO_XYZ, data.gyr[i]);
-            atomic_inc(&ctx->sample_count);
-        }
-    }
-
-    // Отправляем пакет в очередь без блокировки потока (K_NO_WAIT)
-    k_msgq_put(&imu_msgq, &data, K_NO_WAIT);
-}
-
-// 2. Рабочий поток: просыпается при поступлении данных и выполняет основную логику
-void worker_thread_entry(void *p1, void *p2, void *p3)
-{
-    struct imu_sensor_data data;
-
-    while (1) {
-        // Поток спит, пока в очереди не появятся данные
-        if (k_msgq_get(&imu_msgq, &data, K_FOREVER) == 0) {
-            
-            // ЗДЕСЬ МЕСТО ДЛЯ ВАШЕЙ ЛОГИКИ:
-            // Фильтрация (Kalman/Mahony), математика, отправка по Bluetooth/WiFi.
-            
-            // В качестве примера: сохраняем данные в глобальный массив для монитора
-            for (int i = 0; i < IMU_COUNT; i++) {
-                for(int j = 0; j < 3; j++) {
-                    imu_ctxs[i].acc[j] = data.acc[i][j];
-                    imu_ctxs[i].gyr[j] = data.gyr[i][j];
-                }
-            }
+            sensor_channel_get(ctx->dev, SENSOR_CHAN_ACCEL_XYZ, ctx->acc);
+            sensor_channel_get(ctx->dev, SENSOR_CHAN_GYRO_XYZ, ctx->gyr);
         }
     }
 }
-
-K_THREAD_DEFINE(worker_tid, WORKER_STACK_SIZE, worker_thread_entry, NULL, NULL, NULL,
-                WORKER_PRIORITY, 0, 0);
 
 void init_sensors(void)
 {
@@ -100,7 +57,6 @@ void init_sensors(void)
 
     for (int i = 0; i < IMU_COUNT; i++) {
         imu_ctxs[i].dev = imu_devs[i];
-        atomic_set(&imu_ctxs[i].sample_count, 0);
         
         if (!device_is_ready(imu_ctxs[i].dev)) {
             printf("Error: Device imu%d not ready\n", i);
@@ -130,7 +86,7 @@ void monitor_thread_entry(void *p1, void *p2, void *p3)
     int64_t last_time = k_uptime_get();
 
     while (1) {
-        k_sleep(K_SECONDS(1));
+        k_sleep(K_SECONDS(10));
 
         int64_t now = k_uptime_get();
         int64_t delta_ms = now - last_time;
@@ -148,11 +104,8 @@ void monitor_thread_entry(void *p1, void *p2, void *p3)
                 continue;
             }
 
-            atomic_val_t count = atomic_set(&ctx->sample_count, 0);
-            unsigned long fps = (unsigned long)((count * 1000) / delta_ms);
-
-            printf("[IMU%d] %4lu Hz | A: %3d.%02d %3d.%02d %3d.%02d | G: %3d.%02d %3d.%02d %3d.%02d\n",
-                   i, fps, 
+            printf("[IMU%d] A: %3d.%02d %3d.%02d %3d.%02d | G: %3d.%02d %3d.%02d %3d.%02d\n",
+                   i, 
                    ctx->acc[0].val1, abs(ctx->acc[0].val2 / 10000),
                    ctx->acc[1].val1, abs(ctx->acc[1].val2 / 10000),
                    ctx->acc[2].val1, abs(ctx->acc[2].val2 / 10000),
